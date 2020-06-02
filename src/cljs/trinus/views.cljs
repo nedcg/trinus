@@ -4,8 +4,11 @@
 		[trinus.subs :as subs]
 		[trinus.events :as events]
 		[syn-antd.layout :as layout]
+		[syn-antd.input :as input]
+		[syn-antd.form :as form]
 		[syn-antd.menu :as menu]
 		[syn-antd.button :as button]
+		[syn-antd.select :as select]
 		[syn-antd.breadcrumb :as breadcrumb]
 		[syn-antd.page-header :as page-header]
 		[syn-antd.table :as table]
@@ -27,7 +30,11 @@
 
 (defn objectives []
 	[page-header/page-header
-	 {:title "Objectives"}])
+	 {:title "Objectives"
+		:extra [(reagent.core/as-element
+							[button/button
+							 {:key "1" :type "primary" :on-click #(re-frame/dispatch [::events/navigate :trinus.routes/objective])}
+							 "Add Objective"])]}])
 
 (defn plans []
 	[page-header/page-header
@@ -49,7 +56,8 @@
 		 [table/table {:columns    [{:title "Name" :dataIndex "name" :key "name"}
 																{:title "Email" :dataIndex "email" :key "email"}
 																{:title "Role" :dataIndex "role" :key "role"}
-																{:title "Status" :dataIndex "status" :key "status"}]
+																{:title "Status" :dataIndex "status" :key "status"}
+																{:title "Actions" :dataIndex "actions" :key "actions"}]
 									 :datasource team-data}])])
 
 (defn member []
@@ -59,7 +67,60 @@
 		 :extra [(reagent.core/as-element
 							 [button/button
 								{:key "1" :type "primary"}
-								"Save"])]}]])
+								"Save"])]}]
+	 [form/form
+		{:name        "basic"
+		 :size        "large"
+		 :label-col   {:span 8},
+		 :wrapper-col {:span 8}}
+		[form/form-item
+		 {:label "Name"
+			:name  "name"
+			:rules [{:required true :message "Please input your name"}]}
+		 [input/input]]
+		[form/form-item
+		 {:label "Email"
+			:name  "email"
+			:rules [{:required true :message "Please input your email"}]}
+		 [input/input]]
+		[form/form-item
+		 {:label "Role"
+			:name  "role"
+			:rules [{:required true :message "Please select your roles"}]}
+		 [select/select
+			{:mode        "multiple"
+			 :placeholder "Please select"}
+			[select/select-option {:key "1"} "Engineer"]
+			[select/select-option {:key "2"} "Designer"]
+			[select/select-option {:key "3"} "Manager"]
+			[select/select-option {:key "4"} "Executive"]
+			[select/select-option {:key "5"} "Obsever"]]]]])
+
+(defn objective []
+	[:<>
+	 [page-header/page-header
+		{:title "Objective"
+		 :extra [(reagent.core/as-element
+							 [button/button
+								{:key "1" :type "primary"}
+								"Save"])]}]
+	 [form/form
+		{:name        "basic"
+		 :size        "large"
+		 :label-col   {:span 8},
+		 :wrapper-col {:span 8}}
+		[form/form-item
+		 {:label "Title"
+			:name  "title"
+			:rules [{:required true :message "Please input the title"}]}
+		 [input/input]]
+		[form/form-item
+		 {:label "Motivation"
+			:name  "motivation"
+			:rules [{:required true :message "Please define a motivation"}]}
+		 [input/input-text-area
+			{:placeholder "What is the motivation behind this objective?"}]]
+		]])
 
 (defn navigation [& {:keys [router current-route]}]
 	[menu/menu

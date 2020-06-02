@@ -50,7 +50,14 @@
 		 :view   views/member
 		 :controllers
 						 [{:start (fn [& params] (js/console.log "Entering member page"))
-							 :stop  (fn [& params] (js/console.log "Leaving member page"))}]}]])
+							 :stop  (fn [& params] (js/console.log "Leaving member page"))}]}]
+	 ["objective"
+		{:name   ::objective
+		 :parent ::objectives
+		 :view   views/objective
+		 :controllers
+						 [{:start (fn [& params] (js/console.log "Entering objective page"))
+							 :stop  (fn [& params] (js/console.log "Leaving objective page"))}]}]])
 
 (defn on-navigate [new-match]
 	(when new-match
