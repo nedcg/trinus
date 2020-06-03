@@ -6,7 +6,10 @@
 		[syn-antd.layout :as layout]
 		[syn-antd.input :as input]
 		[syn-antd.form :as form]
+		[syn-antd.list :as list]
+		[syn-antd.card :as card]
 		[syn-antd.menu :as menu]
+		[syn-antd.space :as space]
 		[syn-antd.button :as button]
 		[syn-antd.select :as select]
 		[syn-antd.breadcrumb :as breadcrumb]
@@ -29,12 +32,27 @@
 	 {:title "Overview"}])
 
 (defn objectives []
-	[page-header/page-header
-	 {:title "Objectives"
-		:extra [(reagent.core/as-element
-							[button/button
-							 {:key "1" :type "primary" :on-click #(re-frame/dispatch [::events/navigate :trinus.routes/objective])}
-							 "Add Objective"])]}])
+	[:<>
+	 [page-header/page-header
+		{:title "Objectives"
+		 :extra [(reagent.core/as-element
+							 [button/button
+								{:key "1" :type "primary" :on-click #(re-frame/dispatch [::events/navigate :trinus.routes/objective])}
+								"Add Objective"])]}]
+	 [list/list
+		{:grid       {:gutter 16 :column 3}
+		 :dataSource [{:title "Increase internet presence" :motivation "none"}]
+		 :renderItem #(let [item (js->clj % :keywordize-keys true)
+												{:keys [title motivation]} item]
+										(reagent.core/as-element
+											[list/list-item
+											 [card/card
+												{:title title
+												 :extra (reagent.core/as-element
+																	[space/space
+																	 [button/button {:type "default"} "Edit"]
+																	 [button/button {:type "primary"} "Review"]])}
+												motivation]]))}]])
 
 (defn plans []
 	[page-header/page-header
@@ -119,8 +137,7 @@
 			:name  "motivation"
 			:rules [{:required true :message "Please define a motivation"}]}
 		 [input/input-text-area
-			{:placeholder "What is the motivation behind this objective?"}]]
-		]])
+			{:placeholder "What is the motivation behind this objective?"}]]]])
 
 (defn navigation [& {:keys [router current-route]}]
 	[menu/menu
