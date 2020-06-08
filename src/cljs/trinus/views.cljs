@@ -9,10 +9,11 @@
 		[syn-antd.list :as list]
 		[syn-antd.card :as card]
 		[syn-antd.menu :as menu]
+		[syn-antd.icon :as icon]
+		[syn-antd.select :as select]
+		[syn-antd.icons.message-outlined :as message-outlined]
 		[syn-antd.space :as space]
 		[syn-antd.button :as button]
-		[syn-antd.select :as select]
-		[syn-antd.breadcrumb :as breadcrumb]
 		[syn-antd.page-header :as page-header]
 		[syn-antd.table :as table]
 		[reitit.frontend.easy :as rfe]
@@ -38,7 +39,7 @@
 		 :extra [(reagent.core/as-element
 							 [button/button
 								{:key "1" :type "primary" :on-click #(re-frame/dispatch [::events/navigate :trinus.routes/objective])}
-								"Add Objective"])]}]
+								"Create Objective"])]}]
 	 [list/list
 		{:grid       {:gutter 16 :column 3}
 		 :dataSource [{:title "Increase internet presence" :motivation "none"}]
@@ -55,8 +56,30 @@
 												motivation]]))}]])
 
 (defn plans []
-	[page-header/page-header
-	 {:title "Plans"}])
+	[:<>
+	 [page-header/page-header
+		{:title "Plans"
+		 :extra [(reagent.core/as-element
+							 [button/button
+								{:key "1" :type "primary" :on-click #(re-frame/dispatch [::events/navigate :trinus.routes/objective])}
+								"Create Task"])]}]
+	 [list/list
+		{:size       "small"
+		 :bordered   true
+		 :itemLayout "vertical"
+		 :dataSource [{:id "1" :title "Implement website" :comments-count 10}
+									{:id "2" :title "Create css files" :comments-count 3}]
+		 :renderItem #(let [item (js->clj % :keywordize-keys true)
+												{:keys [id title comments-count]} item]
+										(reagent.core/as-element
+											[list/list-item
+											 {:actions [(reagent.core/as-element
+																		[space/space
+																		 [message-outlined/message-outlined]
+																		 comments-count])]
+												:key     id}
+											 [list/list-item-meta
+												{:title title}]]))}]])
 
 (defn tasks []
 	[page-header/page-header
@@ -141,8 +164,7 @@
 
 (defn navigation [& {:keys [router current-route]}]
 	[menu/menu
-	 {:theme        "dark"
-		:mode         "horizontal"
+	 {:mode         "horizontal"
 		:selectedKeys [(or
 										 (-> current-route :data :parent)
 										 (-> current-route :data :name))]}
@@ -157,11 +179,12 @@
 (defn main-panel [& {:keys [router]}]
 	(let [current-route @(re-frame/subscribe [::subs/current-route])]
 		[layout/layout
-		 {:style {:height "inherit"}}
+		 {:style {:height "inherit"
+							:background "#fff"}}
 		 [layout/layout-header
+			{:style {:padding 0}}
 			[:div.logo]
 			[navigation :router router :current-route current-route]]
-		 [layout/layout-content {:style {:padding "0 50px" :height "inherit"}}
-			(when current-route [(-> current-route :data :view)])]
-		 [layout/layout-footer {:style {:text-align "center"}}
-			"Trinus ©2020 Created by Eduardo Caceres"]]))
+		 [layout/layout-content {:style {:padding "0 50px" :height "inherit"}
+														 :theme "light"}
+			(when current-route [(-> current-route :data :view)])]]))
