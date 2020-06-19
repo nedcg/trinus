@@ -11,8 +11,7 @@
    [syn-antd.menu :as menu]
    [syn-antd.icon :as icon]
    [syn-antd.select :as select]
-   [syn-antd.icons.message-outlined :as message-outlined]
-   [syn-antd.icons.message-outlined :as message-outlined]
+   [syn-antd.icons.heat-map-outlined :as heat-map-outlined]
    [syn-antd.space :as space]
    [syn-antd.button :as button]
    [syn-antd.page-header :as page-header]
@@ -33,6 +32,69 @@
   ([k params query]
    (rfe/href k params query)))
 
+(defn task-form [mode]
+  (let [{:keys [title description]} @(re-frame/subscribe [::subs/form-data])]
+    [form/form {:layout "vertical"}
+     [row/row {:gutter "16"}
+      [col/col {:span "24"}
+       [form/form-item
+        {:name "title"
+         :label "Title"}
+        [input/input title]]]]
+     [row/row {:gutter "16"}
+      [col/col {:span "24"}
+       [form/form-item
+        {:name "description"
+         :label "Description"}
+        [input/input-text-area {:rows 10} description]]]]]))
+
+(defn objective-form [mode]
+  (let [{:keys [title motivation]} @(re-frame/subscribe [::subs/form-data])]
+    [form/form {:layout "vertical"}
+     [row/row {:gutter "16"}
+      [col/col {:span "24"}
+       [form/form-item
+        {:name "title"
+         :label "Title"}
+        [input/input title]]]]
+     [row/row {:gutter "16"}
+      [col/col {:span "24"}
+       [form/form-item
+        {:name "motivation"
+         :label "Motivation"}
+        [input/input-text-area {:rows 10} motivation]]]]]))
+
+(defn member-form [mode]
+  (let [{:keys [name email role]} @(re-frame/subscribe [::subs/form-data])]
+    [form/form {:layout "vertical"}
+     [row/row {:gutter "16"}
+      [col/col {:span "24"}
+       [form/form-item
+        {:label "Name"
+         :name  "name"
+         :rules [{:required true}]}
+        [input/input name]]]
+      [col/col {:span "24"}
+       [form/form-item
+        {:label "Email"
+         :name  "email"
+         :rules [{:required true}]}
+        [input/input email]]]
+      [col/col {:span "24"}
+       [form/form-item
+        {:label "Role"
+         :name  "role"
+         :rules [{:required true}]}
+        [select/select
+         {:mode        "multiple"
+          :value role
+          :placeholder "Please select"}
+         [select/select-option {:key "1"} "Engineer"]
+         [select/select-option {:key "2"} "Designer"]
+         [select/select-option {:key "3"} "Manager"]
+         [select/select-option {:key "4"} "Executive"]
+         [select/select-option {:key "5"} "Obsever"]]]]]]))
+
 (defn overview []
   [page-header/page-header
    {:title "Overview"}])
@@ -43,7 +105,11 @@
     {:title "Objectives"
      :extra [(reagent.core/as-element
               [button/button
-               {:key "1" :type "primary" :on-click #(re-frame/dispatch [::events/navigate :trinus.routes/objective])}
+               {:key "1"
+                :type "primary"
+                :onClick (fn []
+                           (re-frame/dispatch [::events/set-current-form :objective :new])
+                           (re-frame/dispatch [::events/set-drawer-open? true]))}
                "Create Objective"])]}]
    [list/list
     {:grid       {:gutter 16 :column 3}
@@ -56,7 +122,12 @@
                        {:title title
                         :extra (reagent.core/as-element
                                 [space/space
-                                 [button/button {:type "default"} "Edit"]
+                                 [button/button
+                                  {:type "default"
+                                   :on-click (fn []
+                                               (re-frame/dispatch [::events/set-current-form :objective :edit])
+                                               (re-frame/dispatch [::events/set-drawer-open? true]))}
+                                  "Edit"]
                                  [button/button {:type "primary"} "Review"]])}
                        motivation]]))}]])
 
@@ -68,48 +139,25 @@
               [button/button
                {:key "1"
                 :type "primary"
-                :on-click #(re-frame/dispatch [::events/navigate :trinus.routes/objective])}
+                :on-click (fn []
+                            (re-frame/dispatch [::events/set-current-form :task :new])
+                            (re-frame/dispatch [::events/set-drawer-open? true]))}
                "Create Task"])]}]
    [list/list
     {:bordered   true}
-    (for [{:keys [id title comments-count]} [{:id "1" :title "Implement website" :comments-count 10}
-                                             {:id "2" :title "Create css files" :comments-count 3}]]
+    (for [{:keys [id title comments-count] :as task} [{:id "1" :title "Implement website" :comments-count 10}
+                                                      {:id "2" :title "Create css files" :comments-count 3}]]
       [list/list-item
        {:key     id
         :actions [(reagent.core/as-element
                    [button/button
                     {:key "1"
-                     :on-click #(re-frame/dispatch [::events/set-task-drawer-open? true])}
-                    "View"])]}
+                     :on-click (fn []
+                                 (re-frame/dispatch [::events/set-current-form :task :view])
+                                 (re-frame/dispatch [::events/set-drawer-open? true]))}
+                    "Detail"])]}
        [list/list-item-meta
-        {:title title}]])]
-   (let [visible? @(re-frame/subscribe [::subs/task-drawer-open?])]
-     [drawer/drawer
-      {:title "Create new task"
-       :width "50%"
-       :onClose #(re-frame/dispatch [::events/set-task-drawer-open? false])
-       :visible visible?
-       :footer [(reagent.core/as-element
-                 [:div {:style {:textAlign "right"}}
-                  [space/space
-                   [button/button
-                    {:on-click #(re-frame/dispatch [::events/set-task-drawer-open? false])}
-                    "Cancel"]
-                   [button/button {:type "primary"}
-                    "Save"]]])]}
-      [form/form {:layout "vertical"}
-       [row/row {:gutter "16"}
-        [col/col {:span "24"}
-         [form/form-item
-          {:name "title"
-           :label "Title"}
-          [input/input]]]]
-       [row/row {:gutter "16"}
-        [col/col {:span "24"}
-         [form/form-item
-          {:name "description"
-           :label "Description"}
-          [input/input-text-area {:rows 10}]]]]]])])
+        {:title title}]])]])
 
 (defn tasks []
   [page-header/page-header
@@ -121,7 +169,11 @@
     {:title "Team"
      :extra [(reagent.core/as-element
               [button/button
-               {:key "1" :type "primary" :on-click #(re-frame/dispatch [::events/navigate :trinus.routes/member])}
+               {:key "1"
+                :type "primary"
+                :on-click (fn []
+                            (re-frame/dispatch [::events/set-current-form :member :new])
+                            (re-frame/dispatch [::events/set-drawer-open? true]))}
                "Add Member"])]}]
    (let [team-data @(re-frame/subscribe [::subs/team-data])]
      [table/table {:columns    [{:title "Name" :dataIndex "name" :key "name"}
@@ -130,67 +182,6 @@
                                 {:title "Status" :dataIndex "status" :key "status"}
                                 {:title "Actions" :dataIndex "actions" :key "actions"}]
                    :datasource team-data}])])
-
-(defn member []
-  [:<>
-   [page-header/page-header
-    {:title "Member"
-     :extra [(reagent.core/as-element
-              [button/button
-               {:key "1" :type "primary"}
-               "Save"])]}]
-   [form/form
-    {:name        "basic"
-     :size        "large"
-     :label-col   {:span 8},
-     :wrapper-col {:span 8}}
-    [form/form-item
-     {:label "Name"
-      :name  "name"
-      :rules [{:required true :message "Please input your name"}]}
-     [input/input]]
-    [form/form-item
-     {:label "Email"
-      :name  "email"
-      :rules [{:required true :message "Please input your email"}]}
-     [input/input]]
-    [form/form-item
-     {:label "Role"
-      :name  "role"
-      :rules [{:required true :message "Please select your roles"}]}
-     [select/select
-      {:mode        "multiple"
-       :placeholder "Please select"}
-      [select/select-option {:key "1"} "Engineer"]
-      [select/select-option {:key "2"} "Designer"]
-      [select/select-option {:key "3"} "Manager"]
-      [select/select-option {:key "4"} "Executive"]
-      [select/select-option {:key "5"} "Obsever"]]]]])
-
-(defn objective []
-  [:<>
-   [page-header/page-header
-    {:title "Objective"
-     :extra [(reagent.core/as-element
-              [button/button
-               {:key "1" :type "primary"}
-               "Save"])]}]
-   [form/form
-    {:name        "basic"
-     :size        "large"
-     :label-col   {:span 8},
-     :wrapper-col {:span 8}}
-    [form/form-item
-     {:label "Title"
-      :name  "title"
-      :rules [{:required true :message "Please input the title"}]}
-     [input/input]]
-    [form/form-item
-     {:label "Motivation"
-      :name  "motivation"
-      :rules [{:required true :message "Please define a motivation"}]}
-     [input/input-text-area
-      {:placeholder "What is the motivation behind this objective?"}]]]])
 
 (defn navigation [& {:keys [router current-route]}]
   [menu/menu
@@ -206,6 +197,39 @@
        :on-click #(re-frame/dispatch [::events/navigate route-name])}
       text])])
 
+(defn- get-title [form-name mode]
+  (let [entity-text (condp = form-name
+                      :task "task"
+                      :objective "objective"
+                      :member "team member"
+                      nil)
+        action-text (condp = mode
+                      :new "New"
+                      "Viewing")]
+    (str action-text " " action-text)))
+
+(defn main-drawer []
+  (let [visible? @(re-frame/subscribe [::subs/drawer-open?])
+        [form-name mode] @(re-frame/subscribe [::subs/current-form])]
+    [drawer/drawer
+     {:title (get-title form-name mode)
+      :width "50%"
+      :onClose #(re-frame/dispatch [::events/set-drawer-open? false])
+      :visible visible?
+      :footer [(reagent.core/as-element
+                [:div {:style {:textAlign "right"}}
+                 [space/space
+                  [button/button
+                   {:on-click #(re-frame/dispatch [::events/set-drawer-open? false])}
+                   "Cancel"]
+                  [button/button {:type "primary"}
+                   "Save"]]])]}
+     (condp = form-name
+       :task [task-form mode]
+       :objective [objective-form mode]
+       :member [member-form mode]
+       nil)]))
+
 (defn main-panel [& {:keys [router]}]
   (let [current-route @(re-frame/subscribe [::subs/current-route])]
     [layout/layout
@@ -213,8 +237,15 @@
               :background "#fff"}}
      [layout/layout-header
       {:style {:padding 0}}
-      [:div.logo]
+      [heat-map-outlined/heat-map-outlined
+       {:style {:fontSize "2em"
+                :float "left"
+                :width "3em"
+                :height "31px"
+                :padding ".7em"
+                :color "#1890ff"}}]
       [navigation :router router :current-route current-route]]
      [layout/layout-content {:style {:padding "0 50px" :height "inherit"}
                              :theme "light"}
-      (when current-route [(-> current-route :data :view)])]]))
+      (when current-route [(-> current-route :data :view)])
+      [main-drawer]]]))

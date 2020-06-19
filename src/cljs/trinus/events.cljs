@@ -4,9 +4,7 @@
    [trinus.db :as db]
    [trinus.fx :as fx]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
-   [reitit.frontend.controllers :as rfc]
-
-   ))
+   [reitit.frontend.controllers :as rfc]))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -29,7 +27,19 @@
     (assoc db :current-route (assoc new-match :controllers controllers)))))
 
 (re-frame/reg-event-db
- ::set-task-drawer-open?
+ ::set-drawer-open?
  (fn-traced
   [db [_ open?]]
-  (assoc db :task-drawer-open? open?)))
+  (assoc db :drawer-open? open?)))
+
+(re-frame/reg-event-db
+ ::set-current-form
+ (fn-traced
+  [db [_ form-name mode]]
+  (assoc db :current-form [form-name mode])))
+
+(re-frame/reg-event-db
+ ::set-form-data
+ (fn-traced
+  [db [_ data]]
+  (assoc db :form-data data)))

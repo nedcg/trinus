@@ -3,4 +3,6 @@
 (def default-db
   {:current-route nil
    :team-data     []
-   :task-drawer-open? false})
+   :drawer-open? false
+   :current-form [nil nil]
+   :form-data {}})
