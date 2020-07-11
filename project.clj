@@ -8,7 +8,8 @@
                  [reagent "0.10.0"]
                  [re-frame "0.12.0"]
                  [day8.re-frame/tracing "0.5.5"]
-                 [metosin/reitit "0.5.2"]
+                 [metosin/reitit-frontend "0.5.2"]
+                 [metosin/reitit-spec "0.5.2"]
                  [syn-antd "4.2.2"]]
 
   :plugins [[lein-shadow "0.2.1"]
@@ -39,8 +40,7 @@
                                              {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}
 
                                :devtools   {:http-root "resources/public"
-                                            :http-port 8280
-                                            }}}}
+                                            :http-port 8280}}}}
 
   :aliases {"dev"          ["with-profile" "dev" "do"
                             ["shadow" "watch" "app"]]

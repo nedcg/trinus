@@ -199,12 +199,12 @@
 
 (defn- get-title [form-name mode]
   (let [entity-text (condp = form-name
-                      :task "task"
+                      :task "Task"
                       :objective "objective"
                       :member "team member"
                       nil)
         action-text (condp = mode
-                      :new "New"
+                      :new ""
                       "Viewing")]
     (str action-text " " action-text)))
 
