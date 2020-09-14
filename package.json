@@ -1,0 +1,69 @@
+{
+  "name": "trinus-api",
+  "private": true,
+  "version": "0.1.0",
+  "description": "a Sails application",
+  "keywords": [],
+  "dependencies": {
+    "@ant-design/icons": "^4.2.2",
+    "@craco/craco": "^5.6.4",
+    "@sailshq/connect-redis": "^3.2.1",
+    "@sailshq/lodash": "^3.10.3",
+    "@sailshq/socket.io-redis": "^5.2.0",
+    "antd": "^4.6.1",
+    "array-move": "^3.0.1",
+    "bson-objectid": "^1.3.1",
+    "craco-less": "^1.17.0",
+    "lexorank": "^1.0.4",
+    "nodemon": "^2.0.4",
+    "react-sortable-hoc": "^1.11.0",
+    "sails": "^1.2.4",
+    "sails-hook-apianalytics": "^2.0.3",
+    "sails-hook-orm": "^2.1.1",
+    "sails-hook-sockets": "^2.0.0",
+    "sails.io.js": "^1.2.1",
+    "socket.io-client": "^2.3.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "3.4.3",
+    "recoil": "0.0.10"
+  },
+  "scripts": {
+    "build": "webpack --mode production",
+    "start": "NODE_ENV=development ./node_modules/nodemon/bin/nodemon.js app.js",
+    "start-www": "craco start",
+    "build-www": "craco build",
+    "test-www": "craco test",
+    "test": "npm run lint && npm run custom-tests && echo 'Done.'",
+    "lint": "./node_modules/eslint/bin/eslint.js . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'",
+    "custom-tests": "echo \"(No other custom tests yet.)\" && echo"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eduardocaceres/trinus-api.git"
+  },
+  "author": "eduardocaceres",
+  "license": "",
+  "engines": {
+    "node": "^14.7"
+  }
+}
